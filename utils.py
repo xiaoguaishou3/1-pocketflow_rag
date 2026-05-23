@@ -24,7 +24,13 @@ def get_embedding(text):
     )
     embedding = response.data[0].embedding
 
-    return np.array(embedding, dytpe=np.float32)
+    return np.array(embedding, dtype=np.float32)
+
+def get_embeddings_2(texts):
+    from sentence_transformers import SentenceTransformer
+    _model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
+    vec = _model.encode(texts, normalize_embeddings=True)  # 归一化后 L2 距离 ≈ 余弦相似度
+    return np.asarray(vec, dtype=np.float32)
 
 if __name__ == '__main__':
     print("=== Testing embedding function ===")
@@ -32,5 +38,8 @@ if __name__ == '__main__':
     text1 = "The quick brown fox jumps over the lazy dog."
     text2 = "Python is a popular programming language for data science."
 
-    oai_emb1= get_embedding(text1)
-    print(f"可以获得什么结果：{oai_emb1}")
+    # oai_emb1= get_embedding(text1)
+    # print(f"可以获得什么结果：{oai_emb1}")
+
+    res = get_embeddings_2(text1)
+    print(f"可以获得什么结果：{res}")
