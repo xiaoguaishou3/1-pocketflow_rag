@@ -8,9 +8,12 @@ import numpy as np
 from openai import OpenAI
 
 def call_llm(prompt):
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", "your-api-key"))
+    client = OpenAI(
+        api_key=os.environ.get("OPENAI_API_KEY", "your-api-key"),
+        base_url="https://api.xiaomimimo.com/v1"
+    )
     r = client.chat.completions.create(
-        model="gpt-4o",
+        model="mimo-v2-flash",
         messages=[{"role": "user", "content": prompt}]
     )
     return  r.choices[0].message.content
