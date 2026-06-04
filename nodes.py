@@ -3,7 +3,7 @@
 @Author : 74775
 @Date   : 2026/5/16 21:32
 """
-from pocketflow import Node, Flow, BatchNode
+from pocketflow import Node, BatchNode
 import numpy as np
 import faiss
 from utils import get_embeddings_2, fix_size_chunk, call_llm
