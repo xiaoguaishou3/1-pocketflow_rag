@@ -35,14 +35,32 @@ def get_embeddings_2(texts):
     vec = _model.encode(texts, normalize_embeddings=True)  # 归一化后 L2 距离 ≈ 余弦相似度
     return np.asarray(vec, dtype=np.float32)
 
+def fix_size_chunk(text, chunk_size=2000):
+    chunks = []
+    for i in range(0, len(text), chunk_size):
+        chunks.append(text[i:i+chunk_size])
+
+    return chunks
+
 if __name__ == '__main__':
+    # client = OpenAI(
+    #     api_key=os.environ.get("OPENAI_API_KEY", "your-api-key"),
+    #     base_url="https://api.xiaomimimo.com/v1"
+    # )
+    # res = client.models.list()
+    # print(res)
+    # print("="*20)
+
+    # print("=== Testing call_llm ===")
+    # prompt = "In a few words, what is the meaning of life?"
+    # print(f"Prompt: {prompt}")
+    # response = call_llm(prompt)
+    # print(f"Response: {response}")
+
     print("=== Testing embedding function ===")
 
     text1 = "The quick brown fox jumps over the lazy dog."
     text2 = "Python is a popular programming language for data science."
-
-    # oai_emb1= get_embedding(text1)
-    # print(f"可以获得什么结果：{oai_emb1}")
 
     res = get_embeddings_2(text1)
     print(f"可以获得什么结果：{res}")
