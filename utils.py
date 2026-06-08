@@ -6,10 +6,32 @@
 import os
 import numpy as np
 from openai import OpenAI
+from dotenv import load_dotenv
+
+load_dotenv()
+HF_HUB_CACHE = os.getenv("HF_HUB_CACHE")
+BGE_MODEL_REPO = os.getenv("BGE_MODEL_REPO")
+_embedding_model = None
+
+
+def _get_local_bge_model_path():
+    refs_main = os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "refs", "main")
+    with open(refs_main, encoding="utf-8") as f:
+        revision = f.read().strip()
+    return os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "snapshots", revision)
+
+
+def _get_embedding_model():
+    global _embedding_model
+    if _embedding_model is None:
+        from sentence_transformers import SentenceTransformer
+        model_path = _get_local_bge_model_path()
+        _embedding_model = SentenceTransformer(model_path)
+    return _embedding_model
 
 def call_llm(prompt):
     client = OpenAI(
-        api_key=os.environ.get("OPENAI_API_KEY", "your-api-key"),
+        api_key=os.getenv("OPENAI_API_KEY"),
         base_url="https://api.xiaomimimo.com/v1"
     )
     r = client.chat.completions.create(
@@ -30,8 +52,7 @@ def get_embedding(text):
     return np.array(embedding, dtype=np.float32)
 
 def get_embeddings_2(texts):
-    from sentence_transformers import SentenceTransformer
-    _model = SentenceTransformer("BAAI/bge-small-zh-v1.5")
+    _model = _get_embedding_model()
     vec = _model.encode(texts, normalize_embeddings=True)  # 归一化后 L2 距离 ≈ 余弦相似度
     return np.asarray(vec, dtype=np.float32)
 
@@ -44,7 +65,7 @@ def fix_size_chunk(text, chunk_size=2000):
 
 if __name__ == '__main__':
     # client = OpenAI(
-    #     api_key=os.environ.get("OPENAI_API_KEY", "your-api-key"),
+    #     api_key=os.getenv("OPENAI_API_KEY"),
     #     base_url="https://api.xiaomimimo.com/v1"
     # )
     # res = client.models.list()
