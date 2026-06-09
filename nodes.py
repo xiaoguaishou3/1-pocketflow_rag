@@ -41,7 +41,7 @@ class EmbedDocumentsNode(BatchNode):
         shared["embeddings"] = embeddings
         print(f"✅ Create {len(embeddings)}")
         print(f"✅ Create {len(embeddings)} document embeddings")
-        return "Default"
+        return "default"
 
 class CreateIndexNode(Node):
     def prep(self, shared):
