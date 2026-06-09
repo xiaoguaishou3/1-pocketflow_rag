@@ -11,21 +11,25 @@ from dotenv import load_dotenv
 load_dotenv()
 HF_HUB_CACHE = os.getenv("HF_HUB_CACHE")
 BGE_MODEL_REPO = os.getenv("BGE_MODEL_REPO")
+DEFAULT_BGE_MODEL = "BAAI/bge-small-zh-v1.5"
 _embedding_model = None
 
 
-def _get_local_bge_model_path():
-    refs_main = os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "refs", "main")
-    with open(refs_main, encoding="utf-8") as f:
-        revision = f.read().strip()
-    return os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "snapshots", revision)
+def _resolve_bge_model_path():
+    """Prefer a local Hugging Face cache snapshot; fall back to model repo id."""
+    if HF_HUB_CACHE and BGE_MODEL_REPO:
+        refs_main = os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "refs", "main")
+        with open(refs_main, encoding="utf-8") as f:
+            revision = f.read().strip()
+        return os.path.join(HF_HUB_CACHE, BGE_MODEL_REPO, "snapshots", revision)
+    return DEFAULT_BGE_MODEL
 
 
 def _get_embedding_model():
     global _embedding_model
     if _embedding_model is None:
         from sentence_transformers import SentenceTransformer
-        model_path = _get_local_bge_model_path()
+        model_path = _resolve_bge_model_path()
         _embedding_model = SentenceTransformer(model_path)
     return _embedding_model
 
@@ -83,5 +87,7 @@ if __name__ == '__main__':
     text1 = "The quick brown fox jumps over the lazy dog."
     text2 = "Python is a popular programming language for data science."
 
-    res = get_embeddings_2(text1)
-    print(f"可以获得什么结果：{res}")
+    emb1 = get_embeddings_2(text1)
+    emb2 = get_embeddings_2(text2)
+    print(f"shape: {emb1.shape}, dtype: {emb1.dtype}")
+    print(f"similarity (dot product): {float(np.dot(emb1, emb2)):.4f}")
