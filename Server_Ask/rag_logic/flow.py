@@ -4,7 +4,7 @@
 @Date   : 2026/5/16 21:30
 """
 from pocketflow import Flow
-from nodes import EmbedDocumentsNode, CreateIndexNode, EmbedQueryNode, RetrieveDocumentNode, ChunkDocumentsNode, GenerateAnswerNode
+from .nodes import EmbedDocumentsNode, CreateIndexNode, EmbedQueryNode, RetrieveDocumentNode, ChunkDocumentsNode, GenerateAnswerNode
 
 def get_offline_flow():
     chunk_docs_node = ChunkDocumentsNode()
