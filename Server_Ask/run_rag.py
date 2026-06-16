@@ -4,7 +4,7 @@ shared = dict()
 
 
 def offline_get_shared_store():
-    texts = [
+    DOCUMENTS = [
         # PocketFlow framework
         """Pocket Flow is a 100-line minimalist LLM framework
         Lightweight: Just 100 lines. Zero bloat, zero dependencies, zero vendor lock-in.
@@ -42,7 +42,7 @@ def offline_get_shared_store():
     ]
     global shared
     shared.update({
-            "texts": texts,
+            "texts": DOCUMENTS,
             "embeddings": None,
             "query": None,
             "query_embedding": None,
