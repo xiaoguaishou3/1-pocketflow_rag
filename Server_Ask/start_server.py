@@ -2,7 +2,6 @@
 FastAPI 服务入口：支持会话管理和文档上传的 RAG 服务。
 """
 from fastapi import FastAPI, Request
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
@@ -24,13 +23,6 @@ async def startup(app: FastAPI):
 app = FastAPI(lifespan=startup)
 
 app.add_middleware(SessionMiddleware)
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 
 @app.get("/")
