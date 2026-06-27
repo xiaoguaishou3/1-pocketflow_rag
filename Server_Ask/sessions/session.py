@@ -10,6 +10,7 @@ import numpy as np
 import faiss
 
 from common.utils import get_embeddings_2, fix_size_chunk
+from common.defaults import DEFAULT_DOCUMENTS
 
 
 @dataclass
@@ -76,6 +77,40 @@ class SessionManager:
             ]
             for sid in expired:
                 del self._sessions[sid]
+
+    def get_default_chunks(self) -> list[str]:
+        chunks = []
+        for doc in DEFAULT_DOCUMENTS:
+            chunks.extend(fix_size_chunk(doc))
+        return chunks
+
+    def get_chunks_for_session(self, session_id: str) -> list[str]:
+        if self.has_documents(session_id):
+            return self.get_chunks(session_id)
+        return self.get_default_chunks()
+
+    def build_shared(self, query: str, chunks: list[str]) -> dict:
+        all_embs = [get_embeddings_2(c) for c in chunks]
+        emb_np = np.array(all_embs, dtype=np.float32)
+        query_emb = np.array([get_embeddings_2(query)], dtype=np.float32)
+
+        dim = emb_np.shape[1]
+        idx = faiss.IndexFlatL2(dim)
+        idx.add(emb_np)
+        dists, idces = idx.search(query_emb, k=1)
+        best_idx = idces[0][0]
+
+        return {
+            "texts": chunks,
+            "query": query,
+            "query_embedding": query_emb,
+            "retrieved_document": {
+                "text": chunks[best_idx],
+                "index": best_idx,
+                "distance": float(dists[0][0])
+            },
+            "generated_answer": None
+        }
 
 
 session_manager = SessionManager()
