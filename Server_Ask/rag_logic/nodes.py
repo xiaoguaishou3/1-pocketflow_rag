@@ -6,7 +6,7 @@
 from pocketflow import Node, BatchNode
 import numpy as np
 import faiss
-from .utils import get_embeddings_2, fix_size_chunk, call_llm
+from common.utils import get_embeddings_2, fix_size_chunk, call_llm
 
 
 # Nodes for the offline flow
