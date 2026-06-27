@@ -9,7 +9,7 @@ import numpy as np
 from openai import OpenAI
 from dotenv import load_dotenv
 
-load_dotenv(r"D:\Project\practice_many\PocketFlow\1-pocketflow_rag\.env")
+load_dotenv()
 HF_HUB_CACHE = os.getenv("HF_HUB_CACHE")
 BGE_MODEL_REPO = os.getenv("BGE_MODEL_REPO")
 DEFAULT_BGE_MODEL = "BAAI/bge-small-zh-v1.5"
