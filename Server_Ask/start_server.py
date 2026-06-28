@@ -9,14 +9,22 @@ from typing import Optional
 
 from rag_logic.flow import offline_flow, online_flow
 from sessions.session import session_manager
-from middleware import SessionMiddleware
+from middleware import SessionMiddleware, init_default_shared
 
 
 @asynccontextmanager
 async def startup(app: FastAPI):
-    from run_rag import offline_get_shared_store
-    default_shared = offline_get_shared_store()
+    from common.defaults import DEFAULT_DOCUMENTS
+    default_shared = {
+        "texts": list(DEFAULT_DOCUMENTS),
+        "embeddings": None,
+        "query": None,
+        "query_embedding": None,
+        "retrieved_document": None,
+        "generated_answer": None
+    }
     offline_flow.run(default_shared)
+    init_default_shared(default_shared)
     yield
 
 
@@ -67,11 +75,11 @@ async def upload(req: UploadRequest):
     session_id = req.session_id or str(uuid.uuid4())
     session_manager.add_documents(session_id, req.texts)
 
-    session = session_manager.get_or_create(session_id)
+    shared = session_manager.get_shared(session_id)
     return UploadResponse(
         session_id=session_id,
-        document_count=len(session.documents),
-        chunk_count=len(session.chunks)
+        document_count=len(req.texts),
+        chunk_count=len(shared.get("texts", []))
     )
 
 
