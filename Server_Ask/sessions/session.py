@@ -6,8 +6,7 @@ import time
 from dataclasses import dataclass, field
 from typing import Optional
 
-from common.defaults import DEFAULT_DOCUMENTS
-from rag_logic.flow import offline_flow
+from rag_logic import offline_flow
 
 
 @dataclass

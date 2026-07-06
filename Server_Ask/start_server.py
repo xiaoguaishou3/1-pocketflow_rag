@@ -10,11 +10,12 @@ from typing import Optional
 from rag_logic.flow import offline_flow, online_flow
 from sessions.session import session_manager
 from middleware import SessionMiddleware, init_default_shared
+from common.defaults import DEFAULT_DOCUMENTS
+import uuid
 
 
 @asynccontextmanager
 async def startup(app: FastAPI):
-    from common.defaults import DEFAULT_DOCUMENTS
     default_shared = {
         "texts": list(DEFAULT_DOCUMENTS),
         "embeddings": None,
@@ -71,7 +72,6 @@ class UploadResponse(BaseModel):
 
 @app.post("/upload", response_model=UploadResponse)
 async def upload(req: UploadRequest):
-    import uuid
     session_id = req.session_id or str(uuid.uuid4())
     session_manager.add_documents(session_id, req.texts)
 

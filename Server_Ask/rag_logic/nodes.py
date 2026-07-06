@@ -39,7 +39,6 @@ class EmbedDocumentsNode(BatchNode):
     def post(self, shared, prep_res, exec_res_list):
         embeddings = np.array(exec_res_list, dtype=np.float32)
         shared["embeddings"] = embeddings
-        print(f"✅ Create {len(embeddings)}")
         print(f"✅ Create {len(embeddings)} document embeddings")
         return "default"
 
