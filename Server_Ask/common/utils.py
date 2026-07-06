@@ -38,7 +38,7 @@ def _get_embedding_model():
     return _embedding_model
 
 def _get_llm_client():
-    """懒加载 OpenAI 客户端，全局复用。"""
+    """Lazy-load OpenAI client, reuse globally."""
     global _llm_client
     if _llm_client is None:
         _llm_client = OpenAI(
