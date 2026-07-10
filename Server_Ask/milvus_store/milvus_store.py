@@ -65,8 +65,8 @@ class MilvusStore:
         for field in fields_config:
             field_schema = FieldSchema(
                 name=field["name"],
-                dtpye=field["dtpye"],
-                **{k: v for k, v in field.items() if k not in ["name", "dtpye"]}
+                dtype=field["dtype"],
+                **{k: v for k, v in field.items() if k not in ["name", "dtype"]}
             )
             fields.append(field_schema)
         collection_schema = CollectionSchema(
@@ -87,13 +87,12 @@ class MilvusStore:
                 schema=self.collection_schema,
             )
 
-    def get_collection(self, name: str = COLLECTION_NAME) -> Collection:
+    def get_collection(self, name: str = COLLECTION_NAME) -> bool:
         return self.client.has_collection(name)
 
 
     def drop_collection(self, name: str = COLLECTION_NAME) -> bool:
         if self.get_collection(name):
-            self.client.drop_collection(name)
             self.client.drop_collection(name)
 
 
@@ -103,9 +102,10 @@ class MilvusStore:
         embeddings,
         session_id: str,
         chunk_indices,
+        doc_hash,
         collection_name: str = COLLECTION_NAME,
     ):
-        data = [texts, embeddings, [session_id] * len(texts), chunk_indices]
+        data = [texts, embeddings, doc_hash, [session_id] * len(texts), chunk_indices]
         res = self.client.insert(collection_name, data)
 
         print(f"insert result:\n{res}")
@@ -134,7 +134,7 @@ class MilvusStore:
                 formatted_results.append({
                     "id": hit.id,
                     "text": hit.entity.get("text"),
-                    "session_id": hit.entity.get("session_id"),
+                    "session_ids": hit.entity.get("session_ids"),
                     "chunk_index": hit.entity.get("chunk_index"),
                     "distance": hit.distance
                 })
